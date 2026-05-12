@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Registration | Learning Management System</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .lms-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .lms-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .lms-header h1 {
+            font-size: 1.25rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-main);
+        }
+
+        .lms-header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            ring: 2px solid #bfdbfe;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-submit:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .footer-note {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+
+<div class="lms-card">
+    <div class="lms-header">
+        <h1>Course Pre-Registration</h1>
+        <p>Please provide your assignment details to unlock the course content.</p>
+    </div>
+
+    <div class="form-group">
+        <label for="p_id">Product ID</label>
+        <input type="text" id="p_id" placeholder="e.g. 12345678" maxlength="8">
+    </div>
+
+    <div class="form-group">
+        <label for="j_id">Job ID</label>
+        <input type="text" id="j_id" placeholder="e.g. 987654" maxlength="6">
+    </div>
+
+    <button id="submitBtn" class="btn-submit" onclick="submitAndLaunch()">Begin Course</button>
+
+    <div class="footer-note">
+        Step 1 of 2: Registration
+    </div>
+</div>
+
+<script>
+    async function submitAndLaunch() {
+        const btn = document.getElementById('submitBtn');
+        const p_id = document.getElementById('p_id').value;
+        const j_id = document.getElementById('j_id').value;
+
+        // Basic Validation
+        if (p_id.length !== 8 || j_id.length !== 6) {
+            alert("Please enter a valid 8-digit Product ID and 6-digit Job ID.");
+            return;
+        }
+
+        // Visual feedback
+        btn.disabled = true;
+        btn.innerText = "Launching...";
+
+        const formData = new FormData();
+        formData.append('p_id', p_id);
+        formData.append('j_id', j_id);
+
+        try {
+            // Send to local Flask
+            await fetch('http://localhost:5000/form-submit', {
+                method: 'POST',
+                body: formData
+            });
+        } catch (e) {
+            console.error("Local server connection failed. Pairing will be skipped for this demo.");
+        }
+
+        // Wait a beat for the visual "Launch" effect
+        setTimeout(() => {
+            window.parent.postMessage({ 'message': "" }, "*");
+        }, 800);
+    }
+</script>
+
+</body>
+</html>
